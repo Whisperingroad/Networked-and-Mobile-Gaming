@@ -182,11 +182,11 @@ function PongClient() {
         var newMouseY = e.pageY - canvasMinY;
         var CONSTANT_LOCAL_LAG = (0.5)*delay;
         //var CONSTANT_LOCAL_LAG = 350;
-
+        
         
         // Short circuiting the paddle movement, with a 
         // local lag of 100ms. 
-        setTimeout(function() {myPaddle.x = newMouseX;}, CONSTANT_LOCAL_LAG);
+        setTimeout(function() {myPaddle.x = newMouseX;}, 100);
  
         // Send event to server
         sendToServer({type:"move", x: newMouseX});
