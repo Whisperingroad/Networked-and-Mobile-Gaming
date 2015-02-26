@@ -26,7 +26,6 @@ function PongClient() {
     var prevVx = 0;     // previous velocity (for accelorometer)
     var lastUpdatePaddleAt = 0; // timestamp of last recv update
     var lastUpdateVelocityAt = 0; // timestamp of last recv update
-    var prevLastUpdateVelocityAt = 0;
 
     /*
      * private method: showMessage(location, msg)
@@ -180,10 +179,7 @@ function PongClient() {
         var canvasMaxY = canvasMinX + playArea.height;
         var newMouseX = e.pageX - canvasMinX;
         var newMouseY = e.pageY - canvasMinY;
-        var CONSTANT_LOCAL_LAG = (0.5)*delay;
-        //var CONSTANT_LOCAL_LAG = 350;
-        
-        
+
         // Short circuiting the paddle movement, with a 
         // local lag of 100ms. 
         setTimeout(function() {myPaddle.x = newMouseX;}, 100);
@@ -282,26 +278,11 @@ function PongClient() {
         ball.updatePosition();
         if (myPaddle.y < Paddle.HEIGHT) {
             // my paddle is on top
-            if (this.updateVelocity = true){
-                while ( lastUpdateVelocityAt == prevLastUpdateVelocityAt && lastUpdateVelocityAt!= 0){
-                ball.vx = 0;
-                ball.vy = 0;
-            }
-            }
             ball.checkForBounce(myPaddle, opponentPaddle);
-            prevLastUpdateVelocityAt = lastUpdateVelocityAt;
         } else {
             // my paddle is at the bottom
-            if (this.updateVelocity = true){
-                while ( lastUpdateVelocityAt == prevLastUpdateVelocityAt && lastUpdateVelocityAt!= 0){
-                ball.vx = 0;
-                ball.vy = 0;
-            }    
-                    }  
             ball.checkForBounce(opponentPaddle, myPaddle);
-            prevLastUpdateVelocityAt = lastUpdateVelocityAt;
         }
-
         render();
     }
 
