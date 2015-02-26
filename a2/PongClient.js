@@ -184,7 +184,6 @@ function PongClient() {
         //var CONSTANT_LOCAL_LAG = 350;
         
         
-
         // Short circuiting the paddle movement, with a 
         // local lag of 100ms. 
         setTimeout(function() {myPaddle.x = newMouseX;}, 100);
