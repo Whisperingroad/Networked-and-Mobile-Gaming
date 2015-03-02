@@ -26,6 +26,7 @@ function PongClient() {
     var prevVx = 0;     // previous velocity (for accelorometer)
     var lastUpdatePaddleAt = 0; // timestamp of last recv update
     var lastUpdateVelocityAt = 0; // timestamp of last recv update
+    var prevLastUpdateVelocity = 0;
 
     /*
      * private method: showMessage(location, msg)
@@ -105,6 +106,7 @@ function PongClient() {
                     var t = message.timestamp;
                     if (t < lastUpdateVelocityAt)
                         break;
+                    prevLastUpdateVelocity = lastUpdateVelocityAt;
                     lastUpdateVelocityAt = t;
                     ball.vx = message.ballVX;
                     ball.vy = message.ballVY;
@@ -180,6 +182,10 @@ function PongClient() {
         var newMouseX = e.pageX - canvasMinX;
         var newMouseY = e.pageY - canvasMinY;
         var CONSTANT_LOCAL_LAG = 0.5*(delay)
+        var CONSTANT_MAX_LOCAL_LAG = 350;
+
+        if (CONSTANT_LOCAL_LAG > CONSTANT_MAX_LOCAL_LAG)
+           CONSTANT_LOCAL_LAG = CONSTANT_MAX_LOCAL_LAG;
 
         // Short circuiting the paddle movement, with a 
         // local lag of 100ms. 
@@ -276,14 +282,50 @@ function PongClient() {
     }
     
     var gameLoop = function() {
-        ball.updatePosition();
+        //ball.updatePosition();
         if (myPaddle.y < Paddle.HEIGHT) {
             // my paddle is on top
-            ball.checkForBounce(myPaddle, opponentPaddle);
-        } else {
+            //ball.checkForBounce(myPaddle, opponentPaddle);
+            //message from server has not been received
+            if (prevLastUpdateVelocity == lastUpdateVelocityAt && lastUpdateVelocityAt != 0)
+            {
+                //check if ball is about to collide with paddle
+                if ((ball.isMovingUp() && ball.y - Ball.HEIGHT/2 < Paddle.HEIGHT) ||(ball.isMovingDown() && ball.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT))
+                {
+                    //set velocity = 0 to stick to paddle
+                    ball.vx = 0;
+                    ball.vy = 0;
+                }
+                ball.updatePosition();
+            }
+            //message has been received
+            else  {
+                ball.updatePosition();                
+                ball.checkForBounce(myPaddle, opponentPaddle);
+                prevLastUpdateVelocity = lastUpdateVelocityAt;
+            }     
+        } 
+        else {
             // my paddle is at the bottom
-            ball.checkForBounce(opponentPaddle, myPaddle);
-        }
+            //ball.checkForBounce(opponentPaddle, myPaddle);
+           if (prevLastUpdateVelocity == lastUpdateVelocityAt && lastUpdateVelocityAt != 0)        
+            {
+                //check if ball is about to collide with paddle
+                if ((ball.isMovingUp() && ball.y - Ball.HEIGHT/2 < Paddle.HEIGHT) ||(ball.isMovingDown() && ball.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT))
+                {            
+                    //set velocity = 0 to stick to paddle
+                    ball.vx = 0;
+                    ball.vy = 0;              
+                }
+                ball.updatePosition();
+            }
+            //message has been received
+            else {
+                ball.updatePosition();
+                ball.checkForBounce(opponentPaddle, myPaddle);
+                prevLastUpdateVelocity = lastUpdateVelocityAt;
+            } 
+        }             
         render();
     }
 

@@ -37,7 +37,6 @@ function Ball() {
     this.y = Pong.HEIGHT/2;
     this.velocityUpdated = false;
     this.outOfBound = false;
-
     /*
      * private method: updateVelocity(px)
      *
@@ -159,6 +158,7 @@ function Ball() {
         } else if (that.isMovingDown() && that.y + Ball.HEIGHT/2 > Pong.HEIGHT - Paddle.HEIGHT) {
             // Chance for ball to collide with bottom paddle.
             updateVelocity(bottomPaddle.x);
+           
         }
     }
 
