@@ -27,6 +27,7 @@ function Ball() {
     this.vy;    // y-component of ball's 
     this.velocityUpdated; // has the ball bounced?
     this.outOfBound; // has the ball gone out of bound?
+    this.hit;
 
     // constructor
     var that = this;
@@ -37,6 +38,10 @@ function Ball() {
     this.y = Pong.HEIGHT/2;
     this.velocityUpdated = false;
     this.outOfBound = false;
+    this.hit = false;
+
+
+
     /*
      * private method: updateVelocity(px)
      *
@@ -49,6 +54,7 @@ function Ball() {
     var updateVelocity = function(px) {
         // Change direction (vx) depending on collision point between ball and paddle
         that.velocityUpdated = true;
+        that.hit = true;
         if (that.x >= px - Paddle.R1 && that.x <= px + Paddle.R1) {
             that.vy = -that.vy;
         } else if (that.x >= px - Paddle.R2 && that.x <= px + Paddle.R2) {
@@ -63,6 +69,7 @@ function Ball() {
         } else {
             // ball didn't collide with paddle
             that.velocityUpdated = false;
+            that.hit = false;
         }
     }
 
