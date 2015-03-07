@@ -110,18 +110,18 @@ function PongClient() {
                     break;
                 case "updateVelocity":
                     var date = new Date();
-                    var timeNow = date.getTime();
-                    var t = message.timestamp;
-                    var serverDelay = timeNow - t;
+                    var timeNow = date.getTime(); //current time
+                    var t = message.timestamp;    //time sent from server
+                    var serverDelay = timeNow - t; //server delay
                     if (t < lastUpdateVelocityAt)
                         break;
                     lastUpdateVelocityAt = t;
                     if (lastUpdateVelocityAt > prevUpdateVelocityAt){
-                    timeDifferenceInUpdate = lastUpdateVelocityAt - prevUpdateVelocityAt;
-                    speedFactor = (delay + serverDelay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate;
-                    //speedFactor = (1.2*delay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate;
+                    timeDifferenceInUpdate = lastUpdateVelocityAt - prevUpdateVelocityAt; //duration of ball between paddles
+                    speedFactor = (delay + serverDelay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate; 
                     }
-                    ball.vx = message.ballVX*speedFactor;
+                    //local perception filter
+                    ball.vx = message.ballVX*speedFactor; 
                     ball.vy = message.ballVY*speedFactor;
                     //ball.vy = message.ballVY;
                     // Periodically resync ball position to prevent error
@@ -197,10 +197,10 @@ function PongClient() {
         var canvasMaxY = canvasMinX + playArea.height;
         var newMouseX = e.pageX - canvasMinX;
         var newMouseY = e.pageY - canvasMinY;
-        CONSTANT_MAX_LOCAL_LAG = 350;
-        CONSTANT_LOCAL_LAG = 0.5*(delay);
+        CONSTANT_MAX_LOCAL_LAG = 350; 
+        CONSTANT_LOCAL_LAG = 0.5*(delay); //local lag
 
-        if (CONSTANT_LOCAL_LAG > CONSTANT_MAX_LOCAL_LAG){
+        if (CONSTANT_LOCAL_LAG > CONSTANT_MAX_LOCAL_LAG){ //local lag cannot exceed 350ms
             CONSTANT_LOCAL_LAG = CONSTANT_MAX_LOCAL_LAG;
         }
 
@@ -304,18 +304,16 @@ function PongClient() {
         
         if (myPaddle.y < Paddle.HEIGHT) {
             // my paddle is on top            
-            if(ball.velocityUpdated == true){
+            if(ball.velocityUpdated == true){ //ball hits paddle
                 ball.vx = 0;
-                ball.vy = 0;
-             
-                                
+                ball.vy = 0;      
             }
             else{            
-                 ball.checkForBounce( myPaddle, opponentPaddle);
+                 ball.checkForBounce( myPaddle, opponentPaddle); //check if ball hits paddle
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
-                    var snd = new Audio("bounce.mp3");
+                    var snd = new Audio("bounce.mp3"); //play sound
                     snd.play();                    
                 }
                
@@ -323,19 +321,16 @@ function PongClient() {
              
         } else {
             // my paddle is at the bottom
-             if(ball.velocityUpdated == true){
+             if(ball.velocityUpdated == true){//ball hits paddle
                 ball.vx = 0;
                 ball.vy = 0;
-                var tempHeight = ball.HEIGHT;
-      
-             
             }
             else{           
-                 ball.checkForBounce(opponentPaddle, myPaddle); 
+                 ball.checkForBounce(opponentPaddle, myPaddle); //check if ball hits paddle
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
-                    var snd = new Audio("bounce.mp3");
+                    var snd = new Audio("bounce.mp3");//play sound
                     snd.play();
                 }
      
