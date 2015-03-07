@@ -1,3 +1,4 @@
+
 /*
  * PongClient.js
  * A skeleton client for two-player Pong game.
@@ -29,7 +30,6 @@ function PongClient() {
     var prevUpdateVelocityAt = 0;
     var timeDifferenceInUpdate = 0;
     var speedFactor = 1;
-    var prevVy = 0;
     var CONSTANT_MAX_LOCAL_LAG;
     var CONSTANT_LOCAL_LAG;
 
@@ -108,14 +108,18 @@ function PongClient() {
                     opponentPaddle.x = message.opponentPaddleX;
                     opponentPaddle.y = message.opponentPaddleY;
                     break;
-                case "updateVelocity": 
+                case "updateVelocity":
+                    var date = new Date();
+                    var timeNow = date.getTime();
                     var t = message.timestamp;
+                    var serverDelay = timeNow - t;
                     if (t < lastUpdateVelocityAt)
                         break;
                     lastUpdateVelocityAt = t;
                     if (lastUpdateVelocityAt > prevUpdateVelocityAt){
                     timeDifferenceInUpdate = lastUpdateVelocityAt - prevUpdateVelocityAt;
-                    speedFactor = (1.2*delay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate;
+                    speedFactor = (delay + serverDelay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate;
+                    //speedFactor = (1.2*delay + CONSTANT_LOCAL_LAG + timeDifferenceInUpdate)/timeDifferenceInUpdate;
                     }
                     ball.vx = message.ballVX*speedFactor;
                     ball.vy = message.ballVY*speedFactor;
@@ -311,6 +315,8 @@ function PongClient() {
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
+                    var snd = new Audio("bounce.mp3");
+                    snd.play();                    
                 }
                
             } 
@@ -320,7 +326,8 @@ function PongClient() {
              if(ball.velocityUpdated == true){
                 ball.vx = 0;
                 ball.vy = 0;
-           
+                var tempHeight = ball.HEIGHT;
+      
              
             }
             else{           
@@ -328,12 +335,13 @@ function PongClient() {
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
+                    var snd = new Audio("bounce.mp3");
+                    snd.play();
                 }
      
              
             } 
         }
-        prevVy = ball.vy;   
         render();
     }
 
