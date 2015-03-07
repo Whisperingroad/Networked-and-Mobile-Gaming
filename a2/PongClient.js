@@ -296,23 +296,23 @@ function PongClient() {
     
     var gameLoop = function() {
 
-       
+       ball.updatePosition();
         
         if (myPaddle.y < Paddle.HEIGHT) {
             // my paddle is on top            
             if(ball.velocityUpdated == true){
                 ball.vx = 0;
                 ball.vy = 0;
-                ball.updatePosition();
+             
                                 
             }
-            else if (ball.velocityUpdated == false ){               
+            else{            
                  ball.checkForBounce( myPaddle, opponentPaddle);
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
                 }
-                  ball.updatePosition();
+               
             } 
              
         } else {
@@ -320,16 +320,16 @@ function PongClient() {
              if(ball.velocityUpdated == true){
                 ball.vx = 0;
                 ball.vy = 0;
-                ball.updatePosition();
+           
              
             }
-            else if (ball.velocityUpdated == false){            
+            else{           
                  ball.checkForBounce(opponentPaddle, myPaddle); 
                  if(ball.velocityUpdated == true){
                     ball.vx = 0;
                     ball.vy = 0;
                 }
-                 ball.updatePosition();
+     
              
             } 
         }
