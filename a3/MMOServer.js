@@ -207,16 +207,38 @@ function MMOServer() {
 
                         case "turn":
                             // A player has turned.  Tell everyone else.
-                            var pid = players[conn.id].pid;
-                            ships[pid].jumpTo(message.x, message.y);
-                            ships[pid].turn(message.dir);
-                            broadcastUnless({
+                            var player_pid = players[conn.id].pid;
+                            ships[player_pid].jumpTo(message.x, message.y);
+                            ships[player_pid].turn(message.dir);
+                            for (var i in ships) {
+                                if (i != player_pid) {
+                                    if (ships[i] !== undefined){
+                                        //check if both ships are on the same x coordinate but different y coordinate
+                                        if(((ships[player_pid].x + 10 > ships[i].x && ships[i].x > ships[player_pid].x-10) && (ships[i].y >= Config.HEIGHT-ships[player_pid].y
+                                            || ships[i].y <= ships[player_pid].y)) 
+                                            //check if both ships are on same y c00rdinate but different x coordinate
+                                            || ((ships[player_pid].y + 10 > ships[i].y && ships[i].y > ships[player_pid].y-10) && (ships[i].x >= Config.HEIGHT-ships[player_pid].x
+                                            || ships[i].x <= ships[player_pid].x))){
+                                        unicast(sockets[i], {
+                                            type:"turn",
+                                            id: i, 
+                                            x: message.x, 
+                                            y: message.y, 
+                                            dir: message.dir});   
+                                    }
+                                }
+                            }
+                        }
+                            /*broadcastUnless({
                                 type:"turn",
                                 id: pid,
                                 x: message.x, 
                                 y: message.y, 
                                 dir: message.dir
                             }, pid);
+                            */
+
+
                             break;
 
                         case "fire":
