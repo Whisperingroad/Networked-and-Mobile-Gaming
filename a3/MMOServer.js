@@ -214,14 +214,14 @@ function MMOServer() {
                                 if (i != player_pid) {
                                     if (ships[i] !== undefined){
                                         //check if both ships are on the same x coordinate but different y coordinate
-                                        if(((ships[player_pid].x + 10 > ships[i].x && ships[i].x > ships[player_pid].x-10) && (ships[i].y >= Config.HEIGHT-ships[player_pid].y
-                                            || ships[i].y <= ships[player_pid].y)) 
+                                        if(((ships[player_pid].x + 10 > ships[i].x && ships[i].x > ships[player_pid].x-10) && (ships[i].y <= Config.HEIGHT-ships[player_pid].y
+                                            || ships[i].y >= ships[player_pid].y)) 
                                             //check if both ships are on same y c00rdinate but different x coordinate
-                                            || ((ships[player_pid].y + 10 > ships[i].y && ships[i].y > ships[player_pid].y-10) && (ships[i].x >= Config.HEIGHT-ships[player_pid].x
+                                            || ((ships[player_pid].y + 10 > ships[i].y && ships[i].y > ships[player_pid].y-10) && (ships[i].x >= Config.WIDTH-ships[player_pid].x
                                             || ships[i].x <= ships[player_pid].x))){
                                         unicast(sockets[i], {
                                             type:"turn",
-                                            id: i, 
+                                            id: player_pid, 
                                             x: message.x, 
                                             y: message.y, 
                                             dir: message.dir});   
