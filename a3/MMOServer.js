@@ -87,37 +87,37 @@ function MMOServer() {
      * period roughly corresponding to the frame rate 
      * of the game
      */
-    var gameLoop = function () {
-        var i;
-        var  j;
-        for (i in ships) {
-            ships[i].moveOneStep();
-        }
-        for (i in rockets) {
-            rockets[i].moveOneStep();
-            // remove out of bounds rocket
-            if (rockets[i].x < 0 || rockets[i].x > Config.WIDTH ||
-                rockets[i].y < 0 || rockets[i].y > Config.HEIGHT) {
-                rockets[i] = null;
-                delete rockets[i];
-            } else {
-                // For each ship, checks if this rocket has hit the ship
-                // A rocket cannot hit its own ship.
-                for (j in ships) {
-                    if (rockets[i] != undefined && rockets[i].from != j) {
-                        if (rockets[i].hasHit(ships[j])) {
-                            // tell everyone there is a hit
-                            broadcast({type:"hit", rocket:i, ship:j})
-                            delete rockets[i];
-                        }
-                    } 
-                }
-            }
-        }
-    }
+//    var gameLoop = function () {
+//        var i;
+//        var  j;
+//        for (i in ships) {
+//            ships[i].moveOneStep();
+//        }
+//        for (i in rockets) {
+//            rockets[i].moveOneStep();
+//            // remove out of bounds rocket
+//            if (rockets[i].x < 0 || rockets[i].x > Config.WIDTH ||
+//                rockets[i].y < 0 || rockets[i].y > Config.HEIGHT) {
+//                rockets[i] = null;
+//                delete rockets[i];
+//            } else {
+//                // For each ship, checks if this rocket has hit the ship
+//                // A rocket cannot hit its own ship.
+//                for (j in ships) {
+//                    if (rockets[i] != undefined && rockets[i].from != j) {
+//                        if (rockets[i].hasHit(ships[j])) {
+//                            // tell everyone there is a hit
+//                            broadcast({type:"hit", rocket:i, ship:j})
+//                            delete rockets[i];
+//                        }
+//                    } 
+//                }
+//            }
+//        }
+//    }
+//    
     
-    
- /*   //edited version of loop
+    //edited version of loop
       var gameLoop = function () {
         var i;
         var  j;
@@ -153,7 +153,7 @@ function MMOServer() {
                         {
                         if (rockets[i].hasHit(ships[j])) {
                             // tell everyone there is a hit
-                            broadcast({type:"hit", rocket:i, ship:j})
+                            broadcast({type:"hit", rocket:i, ship:j});
                             delete rockets[i];
                         }
                     } 
@@ -162,7 +162,7 @@ function MMOServer() {
         }
     }
     
-    */
+    
     
     
     
