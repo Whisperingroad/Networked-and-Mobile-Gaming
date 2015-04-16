@@ -115,6 +115,57 @@ function MMOServer() {
             }
         }
     }
+    
+    
+ /*   //edited version of loop
+      var gameLoop = function () {
+        var i;
+        var  j;
+        for (i in ships) {
+            ships[i].moveOneStep();
+        }
+        for (i in rockets) {
+            rockets[i].moveOneStep();
+            // remove out of bounds rocket
+            if (rockets[i].x < 0 || rockets[i].x > Config.WIDTH ||
+                rockets[i].y < 0 || rockets[i].y > Config.HEIGHT) {
+                rockets[i] = null;
+                delete rockets[i];
+            } else {
+                // For each ship, checks if this rocket has hit the ship
+                // A rocket cannot hit its own ship.
+                for (j in ships) {
+                    
+                    //check for rocket direction
+                    if (rockets[i] !== undefined && rockets[i].from != j && (( rockets[i].dir == 'up' || rockets[i].dir == 'down')
+                    //if rocket direction is up or down, consider a vertical column of interest 
+                    // width of vertical column is 10 with rocket in the centre                                                      
+                    && (( rockets[i].x + 5 >= ships[j].x && rockets[i].x - 5 < ships[j].x)
+                    //and that the rocket must be behind or infront of an enemy ship    
+                    && ((rockets[i].y >= ships[j].y || rockets[i].y < ships[j].y)))
+                    // or, if the rocket direction is right or left, consider a horizontal column of
+                    // interest                                                         
+                    || ( rockets[i].dir == 'right' || rockets[i].dir == 'left')
+                    // height of horizontal column is 10 with rocket in the centre                                                         
+                    && ((rockets[i].y + 5 >= ships[j].y && rockets[i].y - 5 < ships[j].y)
+                    // and that rocket must be to the right or to the left of an enemy ship    
+                    && ((rockets[i].x >= ships[j].x || rockets[i].x < ships[j].x)))))    
+                        {
+                        if (rockets[i].hasHit(ships[j])) {
+                            // tell everyone there is a hit
+                            broadcast({type:"hit", rocket:i, ship:j})
+                            delete rockets[i];
+                        }
+                    } 
+                }
+            }
+        }
+    }
+    
+    */
+    
+    
+    
 
     /*
      * priviledge method: start()
