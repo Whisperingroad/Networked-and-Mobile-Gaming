@@ -15,6 +15,10 @@ function Ship()
 	this.dir;            // current direction of ship
 	this.hitCount = 0;   // how many times this ship is hit
 	this.killCount = 0;  // how many times this ship hits other
+    //additional variables
+    this.previousx;
+    this.previousy;
+    
 
 	// private:
 	var lastX;           // To remember last position and last update time
@@ -108,6 +112,8 @@ function Ship()
      */
 	this.jumpTo = function(xx,yy)
 	{
+        this.previousx = lastX;
+        this.previousy = lastY;
 		lastX = that.x;
 		lastY = that.y;
 		lastUpdateAt = getTimestamp();
@@ -147,6 +153,8 @@ function Ship()
      */
 	this.moveOneStep = function()
 	{
+        this.previousx = this.lastX;
+        this.previousy = this.lastY;
 		if (this.dir == "up") {
 			this.up();
 		} else if (this.dir == "down") {

@@ -204,6 +204,17 @@ function Client() {
         for (var i in ships) {
             ships[i].moveOneStep();
         }
+         for (var j in ships){
+             //check if ship was previously in my ships's aoi and is now outside of my ships's aoi wrt to x axis
+            if(myId != j && ((ships[myId].previousx + 100 > ships[j].previousx && ships[j].previousx >= ships[myId].previousx-100) && (ships[myId].x + 100 < ships[j].x || ships[j].x < ships[myId].x - 100)) 
+             //check if ship was previously in my ships's aoi and is now outside of my ships's aoi wrt to x axis
+                ||   ((ships[myId].previousy + 100 > ships[j].previousy && ships[j].previousy >= ships[myId].previousy-100) && (ships[myId].y + 100 < ships[j].y || ships[j].y < ships[myId].y - 100)))             
+            //delete ship
+                delete ships[j];
+                console.log("left aoi");
+                }
+        
+        
         // remove out-of-bound rockets
         for (var i in rockets) {
             rockets[i].moveOneStep();

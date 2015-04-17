@@ -123,25 +123,22 @@ function MMOServer() {
         var  j;
         for (i in ships) {
             ships[i].moveOneStep();
+        }
+          for(i in ships){
             for (j in ships){
-                //check if other ships are within x axis
-                if(i != j && (ships[i].x + 100 > ships[j].x && ships[j].x >= ships[i].x-100) 
-                //check if other ships are within y axis
-                || (ships[i].y + 100 > ships[j].y && ships[j].y >= ships[i].y-100)){
-                    unicast(sockets[j], {
-                                            type:"turn",
-                                            id: i, 
-                                            x: ships[i].x, 
-                                            y: ships[i].y, 
-                                            dir: ships[i].dir});   
+                //check if ship is previously not in other ship's aoi and has now moved into other ship's aoi for x axis
+                if(i != j && ((ships[i].x + 100 > ships[j].x && ships[j].x >= ships[i].x-100) && (ships[i].previousx + 100 < ships[j].previousx || ships[j].previousx < ships[i].previousx - 100)) 
+                //check if ship is previously not in other ship's aoi and has now moved into other ship's aoi for x axis
+                ||   ((ships[i].y + 100 > ships[j].y && ships[j].y >= ships[i].y-100) && (ships[i].previousy + 100 < ships[j].previousy || ships[j].previousy < ships[i].previousy - 100))){
+                    //create new ship   
+                        console.log("joining someones aoi");
                      unicast(sockets[i], {
-                                            type:"turn",
+                                            type:"new",
                                             id: j, 
                                             x: ships[j].x, 
                                             y: ships[j].y, 
                                             dir: ships[j].dir}); 
                                     }
-            }
         }
         for (i in rockets) {
             rockets[i].moveOneStep();
@@ -175,7 +172,7 @@ function MMOServer() {
             }
         }
     }   
-      
+      }
 
     /*
      * priviledge method: start()
@@ -238,12 +235,28 @@ function MMOServer() {
                             }
                             ships[pid] = new Ship();
                             ships[pid].init(x, y, dir);
-                            broadcastUnless({
+                            for ( var s in ships){
+                             if (s !== pid && ships[s] !== undefined){
+                                //Consider a vertical column of interest of width 100 pixels
+                                if((ships[s].x + 50 > ships[pid].x && ships[pid].x > ships[s].x-50) 
+                                //Or consider a horizontal column of interest of height 100 pixels
+                                || (ships[s].y + 50 > ships[pid].y && ships[pid].y > ships[s].y-50)){        
+                                 unicast(sockets[s],{
+                                     type: "new",
+                                     id: pid,
+                                     x: x,
+                                     y: y,
+                                     dir: dir});
+                                 }
+                                 
+                                }
+                             }        
+                           /* broadcastUnless({
                                 type: "new", 
                                 id: pid, 
                                 x: x,
                                 y: y,
-                                dir: dir}, pid)
+                                dir: dir}, pid)*/
                             unicast(sockets[pid], {
                                 type: "join",
                                 id: pid,
@@ -288,15 +301,6 @@ function MMOServer() {
                                 }
                             }
                         }
-                            /*broadcastUnless({
-                                type:"turn",
-                                id: pid,
-                                x: message.x, 
-                                y: message.y, 
-                                dir: message.dir
-                            }, pid);
-                            */
-
 
                             break;
 
