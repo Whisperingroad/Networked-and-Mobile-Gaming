@@ -125,9 +125,9 @@ function MMOServer() {
             ships[i].moveOneStep();
             for (j in ships){
                 //check if other ships are within x axis
-                if(i != j && (ships[i].x + 10 > ships[j].x && ships[j].x >= ships[i].x-10) 
+                if(i != j && (ships[i].x + 100 > ships[j].x && ships[j].x >= ships[i].x-100) 
                 //check if other ships are within y axis
-                || (ships[i].y + 10 > ships[j].y && ships[j].y >= ships[i].y-10)){
+                || (ships[i].y + 100 > ships[j].y && ships[j].y >= ships[i].y-100)){
                     unicast(sockets[j], {
                                             type:"turn",
                                             id: i, 
@@ -157,13 +157,13 @@ function MMOServer() {
                     //check for rocket direction
                     if (rockets[i] !== undefined && rockets[i].from != j && ((( rockets[i].dir == 'up' || rockets[i].dir == 'down')
                     //if rocket direction is up or down, consider a vertical column of interest 
-                    // width of vertical column is 10 with rocket in the centre                                                      
-                    && (rockets[i].x + 5 >= ships[j].x && rockets[i].x - 5 < ships[j].x))
+                    // width of vertical column is 20 pixels with rocket in the centre                                                      
+                    && (rockets[i].x + 10 >= ships[j].x && rockets[i].x - 10 < ships[j].x))
                     // or, if the rocket direction is right or left, consider a horizontal column of
                     // interest                                                         
                     || (( rockets[i].dir == 'right' || rockets[i].dir == 'left')
-                    // height of horizontal column is 10 with rocket in the centre                                                         
-                    && (rockets[i].y + 5 >= ships[j].y && rockets[i].y - 5 < ships[j].y))))    
+                    // height of horizontal column is 20 pixels with rocket in the centre                                                         
+                    && (rockets[i].y + 10 >= ships[j].y && rockets[i].y - 10 < ships[j].y))))    
                         {
                         if (rockets[i].hasHit(ships[j])) {
                             // tell everyone there is a hit
@@ -274,10 +274,10 @@ function MMOServer() {
                             for (var i in ships) {
                                 if (i != player_pid) {
                                     if (ships[i] !== undefined){
-                                        //check if both ships are on the same x coordinate but different y coordinate
-                                        if((ships[player_pid].x + 10 > ships[i].x && ships[i].x > ships[player_pid].x-10) 
-                                            //check if both ships are on same y coordinate but different x coordinate
-                                            || (ships[player_pid].y + 10 > ships[i].y && ships[i].y > ships[player_pid].y-10)){
+                                        //Consider a vertical column of interest of width 100 pixels
+                                        if((ships[player_pid].x + 50 > ships[i].x && ships[i].x > ships[player_pid].x-50) 
+                                            //Or consider a horizontal column of interest of height 100 pixels
+                                            || (ships[player_pid].y + 50 > ships[i].y && ships[i].y > ships[player_pid].y-50)){
                                         unicast(sockets[i], {
                                             type:"turn",
                                             id: player_pid, 

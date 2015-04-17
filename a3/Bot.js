@@ -102,7 +102,7 @@ function Bot() {
                     // For bots, we simulate their movement 4 steps a second.
                     setInterval(function() {gameLoop();}, 250); 
                     break;
-                case "new":
+                case "new":   
                 case "turn":
                 case "fire":
                 case "hit":
