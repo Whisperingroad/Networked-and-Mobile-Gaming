@@ -151,10 +151,9 @@ function MMOServer() {
                 rockets[i] = null;
                 delete rockets[i];
             } else {
-                // For each ship, checks if this rocket has hit the ship
-                // A rocket cannot hit its own ship.
-                for (j in ships) {
-                    
+                // For each ship, checks if the ship is within the rocket's AOI
+                // A rocket cannot hit its own ship
+                for (j in ships) {            
                     //check for rocket direction
                     if (rockets[i] !== undefined && rockets[i].from != j && ((( rockets[i].dir == 'up' || rockets[i].dir == 'down')
                     //if rocket direction is up or down, consider a vertical column of interest 
@@ -176,11 +175,7 @@ function MMOServer() {
             }
         }
     }   
-    
-    
-    
-    
-    
+      
 
     /*
      * priviledge method: start()
