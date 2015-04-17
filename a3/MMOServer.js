@@ -80,42 +80,6 @@ function MMOServer() {
         sockets[nextPID] = conn;
     }
 
-    /*
-     * private method: gameLoop()
-     *
-     * The main game loop.  Called every interval at a
-     * period roughly corresponding to the frame rate 
-     * of the game
-     */
-//    var gameLoop = function () {
-//        var i;
-//        var  j;
-//        for (i in ships) {
-//            ships[i].moveOneStep();
-//        }
-//        for (i in rockets) {
-//            rockets[i].moveOneStep();
-//            // remove out of bounds rocket
-//            if (rockets[i].x < 0 || rockets[i].x > Config.WIDTH ||
-//                rockets[i].y < 0 || rockets[i].y > Config.HEIGHT) {
-//                rockets[i] = null;
-//                delete rockets[i];
-//            } else {
-//                // For each ship, checks if this rocket has hit the ship
-//                // A rocket cannot hit its own ship.
-//                for (j in ships) {
-//                    if (rockets[i] != undefined && rockets[i].from != j) {
-//                        if (rockets[i].hasHit(ships[j])) {
-//                            // tell everyone there is a hit
-//                            broadcast({type:"hit", rocket:i, ship:j})
-//                            delete rockets[i];
-//                        }
-//                    } 
-//                }
-//            }
-//        }
-//    }
-//    
     
     //edited version of loop
       var gameLoop = function () {
@@ -123,15 +87,19 @@ function MMOServer() {
         var  j;
         for (i in ships) {
             ships[i].moveOneStep();
+           // console.log("x and prevx is", ships[i].x , ships[i].previousx);
+            //console.log("y and prevy is", ships[i].y , ships[i].previousy);
         }
           for(i in ships){
             for (j in ships){
-                //check if ship is previously not in other ship's aoi and has now moved into other ship's aoi for x axis
-                if(i != j && ((ships[i].x + 100 > ships[j].x && ships[j].x >= ships[i].x-100) && (ships[i].previousx + 100 < ships[j].previousx || ships[j].previousx < ships[i].previousx - 100)) 
-                //check if ship is previously not in other ship's aoi and has now moved into other ship's aoi for x axis
+                // This condition checks if a ship has entered another ship's vertical column of interest
+                // The vertical area of interest has a width of 100 pixels
+                if(i !== j && ((ships[i].x + 100 > ships[j].x && ships[j].x >= ships[i].x-100) && (ships[i].previousx + 100 < ships[j].previousx || ships[j].previousx < ships[i].previousx - 100)) 
+                // This condition checks if a ship has entered another ship's horizontal row of interest
+                // The horizontal area of interest has a height of 100 pixels
                 ||   ((ships[i].y + 100 > ships[j].y && ships[j].y >= ships[i].y-100) && (ships[i].previousy + 100 < ships[j].previousy || ships[j].previousy < ships[i].previousy - 100))){
-                    //create new ship   
-                        console.log("joining someones aoi");
+                    // if the previous conditions are true
+                    // create the enemy ship in the client
                      unicast(sockets[i], {
                                             type:"new",
                                             id: j, 
@@ -140,6 +108,7 @@ function MMOServer() {
                                             dir: ships[j].dir}); 
                                     }
         }
+          }
         for (i in rockets) {
             rockets[i].moveOneStep();
             // remove out of bounds rocket
@@ -148,18 +117,18 @@ function MMOServer() {
                 rockets[i] = null;
                 delete rockets[i];
             } else {
-                // For each ship, checks if the ship is within the rocket's AOI
+                // For each ship, checks if the ship is within the rocket's area of interest
                 // A rocket cannot hit its own ship
                 for (j in ships) {            
                     //check for rocket direction
                     if (rockets[i] !== undefined && rockets[i].from != j && ((( rockets[i].dir == 'up' || rockets[i].dir == 'down')
                     //if rocket direction is up or down, consider a vertical column of interest 
-                    // width of vertical column is 20 pixels with rocket in the centre                                                      
+                    // width of vertical column is 20 pixels with the rocket in the centre                                                      
                     && (rockets[i].x + 10 >= ships[j].x && rockets[i].x - 10 < ships[j].x))
-                    // or, if the rocket direction is right or left, consider a horizontal column of
+                    // or, if the rocket direction is right or left, consider a horizontal row of
                     // interest                                                         
                     || (( rockets[i].dir == 'right' || rockets[i].dir == 'left')
-                    // height of horizontal column is 20 pixels with rocket in the centre                                                         
+                    // height of horizontal row is 20 pixels with the rocket in the centre                                                         
                     && (rockets[i].y + 10 >= ships[j].y && rockets[i].y - 10 < ships[j].y))))    
                         {
                         if (rockets[i].hasHit(ships[j])) {
@@ -170,8 +139,7 @@ function MMOServer() {
                     } 
                 }
             }
-        }
-    }   
+        }   
       }
 
     /*
@@ -235,11 +203,13 @@ function MMOServer() {
                             }
                             ships[pid] = new Ship();
                             ships[pid].init(x, y, dir);
+                            // When a new ship joins the game
+                            // Render the new ship only if it falls within a client's ship Area of Interest
                             for ( var s in ships){
                              if (s !== pid && ships[s] !== undefined){
                                 //Consider a vertical column of interest of width 100 pixels
                                 if((ships[s].x + 50 > ships[pid].x && ships[pid].x > ships[s].x-50) 
-                                //Or consider a horizontal column of interest of height 100 pixels
+                                //Or consider a horizontal row of interest of height 100 pixels
                                 || (ships[s].y + 50 > ships[pid].y && ships[pid].y > ships[s].y-50)){        
                                  unicast(sockets[s],{
                                      type: "new",
@@ -251,12 +221,6 @@ function MMOServer() {
                                  
                                 }
                              }        
-                           /* broadcastUnless({
-                                type: "new", 
-                                id: pid, 
-                                x: x,
-                                y: y,
-                                dir: dir}, pid)*/
                             unicast(sockets[pid], {
                                 type: "join",
                                 id: pid,
@@ -264,9 +228,13 @@ function MMOServer() {
                                 y: y,
                                 dir: dir});   
                             
+                            
+                            
                             // Tell this new guy who else is in the game.
                             for (var i in ships) {
-                                if (i != pid) {
+                            // Tell the new ship about the enemy ships that falls in his area of interest    
+                                if (i != pid && ((ships[pid].x + 100 > ships[i].x && ships[i].x >= ships[pid].x-100)   
+                ||   (ships[pid].y + 100 > ships[i].y && ships[i].y >= ships[pid].y-100))) {
                                     if (ships[i] !== undefined) {
                                         unicast(sockets[pid], {
                                             type:"new",
@@ -286,10 +254,12 @@ function MMOServer() {
                             ships[player_pid].turn(message.dir);
                             for (var i in ships) {
                                 if (i != player_pid) {
+                                    // Inform other ships about the turn only if the turning ship
+                                    // turns in their area of interest
                                     if (ships[i] !== undefined){
                                         //Consider a vertical column of interest of width 100 pixels
                                         if((ships[player_pid].x + 50 > ships[i].x && ships[i].x > ships[player_pid].x-50) 
-                                            //Or consider a horizontal column of interest of height 100 pixels
+                                            //Or consider a horizontal row of interest of height 100 pixels
                                             || (ships[player_pid].y + 50 > ships[i].y && ships[i].y > ships[player_pid].y-50)){
                                         unicast(sockets[i], {
                                             type:"turn",

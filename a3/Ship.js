@@ -112,8 +112,8 @@ function Ship()
      */
 	this.jumpTo = function(xx,yy)
 	{
-        this.previousx = lastX;
-        this.previousy = lastY;
+        this.previousx = that.x;
+        this.previousy = that.y;
 		lastX = that.x;
 		lastY = that.y;
 		lastUpdateAt = getTimestamp();
@@ -130,6 +130,8 @@ function Ship()
 	{
         lastX = this.x;
         lastY = this.y;
+        this.previousx = this.x;
+        this.previousy = this.y;
         lastUpdateAt = getTimestamp();
 		if (dd == "up") {
 			this.up();
@@ -153,8 +155,8 @@ function Ship()
      */
 	this.moveOneStep = function()
 	{
-        this.previousx = this.lastX;
-        this.previousy = this.lastY;
+        this.previousx = this.x;
+        this.previousy = this.y;
 		if (this.dir == "up") {
 			this.up();
 		} else if (this.dir == "down") {
