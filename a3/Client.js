@@ -203,17 +203,22 @@ function Client() {
     var gameLoop = function() {
         for (var i in ships) {
             ships[i].moveOneStep();
+            //console.log("for client x and prevx is", ships[i].x , ships[i].previousx);
+            //console.log("for client y and prevy is", ships[i].y , ships[i].previousy);
         }
          for (var j in ships){
-             //check if ship was previously in my ships's aoi and is now outside of my ships's aoi wrt to x axis
+            // This condition checks if a ship has left another ship's vertical column of interest
+            // The vertical area of interest has a width of 100 pixels
             if(myId != j && ((ships[myId].previousx + 100 > ships[j].previousx && ships[j].previousx >= ships[myId].previousx-100) && (ships[myId].x + 100 < ships[j].x || ships[j].x < ships[myId].x - 100)) 
-             //check if ship was previously in my ships's aoi and is now outside of my ships's aoi wrt to x axis
-                ||   ((ships[myId].previousy + 100 > ships[j].previousy && ships[j].previousy >= ships[myId].previousy-100) && (ships[myId].y + 100 < ships[j].y || ships[j].y < ships[myId].y - 100)))             
-            //delete ship
+                // This condition checks if a ship has entered another ship's horizontal row of interest
+                // The horizontal area of interest has a height of 100 pixels
+                ||   ((ships[myId].previousy + 100 > ships[j].previousy && ships[j].previousy >= ships[myId].previousy-100) && (ships[myId].y + 100 < ships[j].y || ships[j].y < ships[myId].y - 100))){  
+                // if the previous conditions were true
+                // remove this ship from the client's game
                 delete ships[j];
-                console.log("left aoi");
+                //console.log("left aoi");
                 }
-        
+         }
         
         // remove out-of-bound rockets
         for (var i in rockets) {
@@ -225,8 +230,8 @@ function Client() {
             }
         }
         render();
+    
     }
-
 
     /*
      * priviledge method: render()
