@@ -208,9 +208,9 @@ function MMOServer() {
                             for ( var s in ships){
                              if (s !== pid && ships[s] !== undefined){
                                 //Consider a vertical column of interest of width 100 pixels
-                                if((ships[s].x + 50 > ships[pid].x && ships[pid].x > ships[s].x-50) 
+                                if((ships[s].x + 100 > ships[pid].x && ships[pid].x > ships[s].x-100) 
                                 //Or consider a horizontal row of interest of height 100 pixels
-                                || (ships[s].y + 50 > ships[pid].y && ships[pid].y > ships[s].y-50)){        
+                                || (ships[s].y + 100 > ships[pid].y && ships[pid].y > ships[s].y-100)){        
                                  unicast(sockets[s],{
                                      type: "new",
                                      id: pid,
@@ -227,8 +227,6 @@ function MMOServer() {
                                 x: x,
                                 y: y,
                                 dir: dir});   
-                            
-                            
                             
                             // Tell this new guy who else is in the game.
                             for (var i in ships) {
@@ -248,7 +246,6 @@ function MMOServer() {
                             break;
 
                         case "turn":
-                            // A player has turned.  Tell everyone else.
                             var player_pid = players[conn.id].pid;
                             ships[player_pid].jumpTo(message.x, message.y);
                             ships[player_pid].turn(message.dir);
@@ -258,9 +255,9 @@ function MMOServer() {
                                     // turns in their area of interest
                                     if (ships[i] !== undefined){
                                         //Consider a vertical column of interest of width 100 pixels
-                                        if((ships[player_pid].x + 50 > ships[i].x && ships[i].x > ships[player_pid].x-50) 
+                                        if((ships[i].x + 100 > ships[player_pid].x && ships[player_pid].x > ships[i].x-100) 
                                             //Or consider a horizontal row of interest of height 100 pixels
-                                            || (ships[player_pid].y + 50 > ships[i].y && ships[i].y > ships[player_pid].y-50)){
+                                            || (ships[i].y + 100 > ships[player_pid].y && ships[player_pid].y > ships[i].y-100)){
                                         unicast(sockets[i], {
                                             type:"turn",
                                             id: player_pid, 
